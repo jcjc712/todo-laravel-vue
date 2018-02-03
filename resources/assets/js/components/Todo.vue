@@ -1,16 +1,18 @@
 <template>
     <div class="container">
         <div class="box">
+            <form @submit.prevent="addTodo">
             <div class="field is-grouped">
                 <p class="control is-expanded">
                     <input class="input" type="text" placeholder="Nuevo recordatorio" v-model="todoItemText">
                 </p>
                 <p class="control">
-                    <a class="button is-info" @click="addTodo">
+                    <button class="button is-info" :disabled="todoItemText == ''">
                         Agregar
-                    </a>
+                    </button>
                 </p>
             </div>
+            </form>
         </div>
         <table class="table is-bordered">
             <tr v-for="(todo, index) in items" :key="index">
@@ -41,27 +43,44 @@
             }
         },
         mounted () {
-            this.items = [
-                { text: 'Primer recordatorio', done: true },
-                { text: 'Segundo recordatorio', done: false },
-                { text: 'Tercero recordatorio', done: false },
-                { text: 'Cuarto recordatorio', done: true },
-                { text: 'Quinto recordatorio', done: false },
-            ]
+            axios.get('/api/todos').then(
+                response => this.items = response.data.rows
+            )
         },
         methods: {
             addTodo () {
-                let text = this.todoItemText.trim()
-                if (text !== '') {
-                    this.items.push({ text: text, done: false })
-                    this.todoItemText = ''
-                }
+                axios.post('/api/todos',{
+                    text: this.todoItemText,
+                    done: 0,
+                }).then(
+                    response => {
+                        this.items.unshift(response.data.row)
+                        this.todoItemText = ''
+                    }
+                ).catch(
+                    console.log('error')
+                );
             },
             removeTodo (todo) {
-                this.items = this.items.filter(item => item !== todo)
+                axios.delete('/api/todos/'+todo.id,{}).then(
+                    response => {
+                        this.items = this.items.filter(item => item !== todo)
+                    }
+                ).catch(
+                    console.log('error')
+                );
             },
             toggleDone (todo) {
                 todo.done = !todo.done
+                axios.put('/api/todos/'+todo.id,
+                    todo
+                ).then(
+                    response => {
+                        console.log('success');
+                    }
+                ).catch(
+                    console.log('error')
+                );
             }
         }
     }
