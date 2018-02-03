@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Todo;
 use Illuminate\Http\Request;
+use Mockery\Exception;
 
 /**
  * En esta clase deben implementar los metodos vacios de acuerdo a lo
@@ -14,6 +16,12 @@ use Illuminate\Http\Request;
  */
 class TodoController extends Controller
 {
+    public $todo;
+    public function __construct(Todo $todo)
+    {
+        $this->todo = $todo;
+    }
+
     /**
      * Este método del controlador regresa el listado del todos de la app
      * en un response del tipo json ordenados desde el más antiguo al más nuevo.
@@ -22,7 +30,9 @@ class TodoController extends Controller
      */
     public function index()
     {
-        // TODO
+        return response()->json([
+            'rows' => $this->todo->elementsOrderByOlder(),
+        ],200);
     }
 
     /**
@@ -35,7 +45,14 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        // TODO
+        $request->validate([
+            'text' => 'required',
+            'done' => 'required|boolean',
+        ]);
+        $item = $this->todo->create($request->all());
+        return response()->json([
+            'row' => $item
+        ], 200);
     }
 
     /**
@@ -48,7 +65,14 @@ class TodoController extends Controller
      */
     public function update($id, Request $request)
     {
-        // TODO
+        $request->validate([
+            'text' => 'required',
+            'done' => 'required|boolean',
+        ]);
+        $this->todo->find($id)->update($request->all());
+        return response()->json([
+            'row' => $this->todo->find($id)
+        ], 200);
     }
 
     /**
@@ -60,6 +84,15 @@ class TodoController extends Controller
      */
     public function delete($id)
     {
-        // TODO
+        $item = $this->todo->find($id);
+        if($item){
+            $item->delete();
+            return response()->json([
+                'msg' => 'success'
+            ], 200);
+        }
+        return response()->json([
+            'msg' => 'this item not exist'
+        ], 400);
     }
 }

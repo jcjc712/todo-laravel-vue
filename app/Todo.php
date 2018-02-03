@@ -47,4 +47,8 @@ class Todo extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function elementsOrderByOlder(){
+        return self::orderBy('created_at', 'desc')->get();
+    }
 }
