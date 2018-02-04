@@ -17,7 +17,7 @@
         },
         methods: {
             toggleDone(){
-                this.$emit('toggleDone', this.$props)
+                this.$emit('toggleDone', this.id)
             },
             removeTodo(){
                 this.$emit('removeTodo', this.id)

@@ -27,55 +27,27 @@
      */
     import TodoInput from './TodoInput.vue'
     import TodoItem from './TodoItem.vue'
+    import {mapState, mapMutations, mapGetters} from 'vuex'
     export default {
         components: {
             TodoInput,
-            TodoItem
-        },
-        data () {
-            return {
-                items: [],
-            }
+            TodoItem,
         },
         mounted () {
-            axios.get('/api/todos').then(
-                response => this.items = response.data.rows
-            )
+            this.$store.commit('listTodos');
+        },
+        computed: {
+            ...mapState(['items']),
         },
         methods: {
             addTodo (param) {
-                axios.post('/api/todos',{
-                    text: param,
-                    done: 0,
-                }).then(
-                    response => {
-                        this.items.unshift(response.data.row)
-                    }
-                ).catch(function (error) {
-                        console.log(error);
-                });
+                this.$store.commit('addTodo',param);
             },
             removeTodo (id) {
-                axios.delete('/api/todos/'+id,{}).then(
-                    response => {
-                        this.items = this.items.filter(item => item.id !== id)
-                    }
-                ).catch(function (error) {
-                    console.log(error);
-                });
+                this.$store.commit('removeTodo',id);
             },
-            toggleDone: function(todo) {
-                let item = this.items.find((element) => { return element.id === todo.id })
-                item.done = !item.done
-                axios.put('/api/todos/'+item.id,
-                    item
-                ).then(
-                    response => {
-                        console.log('success');
-                    }
-                ).catch(function (error) {
-                    console.log(error);
-                });
+            toggleDone: function(id) {
+                this.$store.commit('toggleDone',id);
             }
         }
     }
