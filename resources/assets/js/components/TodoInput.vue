@@ -21,7 +21,7 @@
         },
         methods: {
             addTodo () {
-                this.$emit('addTodo', this.todoItemText)
+                this.$store.dispatch('addTodo',this.todoItemText);
                 this.todoItemText = ''
             }
         }

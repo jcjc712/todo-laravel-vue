@@ -17,10 +17,10 @@
         },
         methods: {
             toggleDone(){
-                this.$emit('toggleDone', this.id)
+                this.$store.dispatch('updateTodo',{id: this.id, done:!this.done, text:this.text});
             },
             removeTodo(){
-                this.$emit('removeTodo', this.id)
+                this.$store.dispatch('removeTodo',this.id);
             }
         }
     }

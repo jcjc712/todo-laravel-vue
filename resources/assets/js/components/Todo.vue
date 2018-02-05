@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="box">
-            <todo-input @addTodo="addTodo"></todo-input>
+            <todo-input></todo-input>
         </div>
         <table class="table is-bordered">
             <todo-item
@@ -10,8 +10,6 @@
                     :id="todo.id"
                     :text="todo.text"
                     :done="todo.done"
-                    @toggleDone="toggleDone"
-                    @removeTodo="removeTodo"
             ></todo-item>
         </table>
     </div>
@@ -34,22 +32,11 @@
             TodoItem,
         },
         mounted () {
-            this.$store.commit('listTodos');
+            this.$store.dispatch('listTodos');
         },
         computed: {
             ...mapState(['items']),
         },
-        methods: {
-            addTodo (param) {
-                this.$store.commit('addTodo',param);
-            },
-            removeTodo (id) {
-                this.$store.commit('removeTodo',id);
-            },
-            toggleDone: function(id) {
-                this.$store.commit('toggleDone',id);
-            }
-        }
     }
 </script>
 <style>
